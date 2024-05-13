@@ -191,6 +191,37 @@ public class Sudoku extends Application
         	System.out.println("oncloserequest");
         });
     }
+    // Undo メニューアイテムが選択されたときに呼び出されるメソッド
+    private void undoMove() {
+        if (!moveStack.isEmpty()) {
+        // スタックから最後の移動を取り出す
+        Move lastMove = moveStack.pop();
+
+        // その移動を元に戻す（セルの値を元の値に戻すなど）
+        // 例：board.setCell(lastMove.getRow(), lastMove.getCol(), 0);
+
+        // その他の処理
+    }
+    }
+
+        // Show values entered メニューアイテムが選択されたときに呼び出されるメソッド
+    private void showEnteredValues() {
+        StringBuilder enteredValues = new StringBuilder();
+            for (Move move : moveStack) {
+        enteredValues.append(move.getValue()).append(" ");
+    }
+
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Values entered since loading the board");
+        alert.setHeaderText(null);
+        alert.setContentText("Entered values: " + enteredValues.toString());
+        alert.showAndWait();
+}
+
+public static void main(String[] args) {
+    launch(args);
+}
+
 
     private void updateBoard()
     {
@@ -224,34 +255,72 @@ public class Sudoku extends Application
         //
     	Menu fileMenu = new Menu("File");
 
-        addMenuItem(fileMenu, "Load from file", () -> {
-            System.out.println("Load from file");
-            FileChooser fileChooser = new FileChooser();
-            // XXX: this is a hack to get the file chooser to open in the right directory
-            // we should probably have a better way to find this folder than a hard coded path
-			fileChooser.setInitialDirectory(new File("../puzzles"));
-			File sudokuFile = fileChooser.showOpenDialog(primaryStage);
-            if (sudokuFile != null)
-            {
-                System.out.println("Selected file: " + sudokuFile.getName());
-                
-                try {
-                    //TODO: loadBoard() method should throw an exception if the file is not a valid sudoku board
-                    board = Board.loadBoard(new FileInputStream(sudokuFile));
-                    updateBoard();
-                } catch (Exception e) {
-                    // pop up and error window
-                    Alert alert = new Alert(AlertType.ERROR);
-    	            alert.setTitle("Unable to load sudoku board from file "+ sudokuFile.getName());
-    	            alert.setHeaderText(e.getMessage());
-                    alert.setContentText(e.getMessage());
-                    e.printStackTrace();
-                    if (e.getCause() != null) e.getCause().printStackTrace();
-                    
-                    alert.showAndWait();
-                }
-            }
-        });
+        // "Load from file" メニューアイテムの作成
+    addMenuItem(fileMenu, "Load from file", () -> {
+    System.out.println("Load from file");
+    FileChooser fileChooser = new FileChooser();
+    // XXX: this is a hack to get the file chooser to open in the right directory
+    // we should probably have a better way to find this folder than a hard coded path
+    fileChooser.setInitialDirectory(new File("../puzzles"));
+    File sudokuFile = fileChooser.showOpenDialog(primaryStage);
+    if (sudokuFile != null)
+    {
+        System.out.println("Selected file: " + sudokuFile.getName());
+        
+        try {
+            // Board.loadBoard() メソッドを呼び出す部分を try ブロック内に移動する
+            board = Board.loadBoard(new FileInputStream(sudokuFile));
+            updateBoard();
+        } catch (Exception e) {
+            // pop up and error window
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Unable to load sudoku board from file "+ sudokuFile.getName());
+            alert.setHeaderText(e.getMessage());
+            alert.setContentText(e.getMessage());
+            e.printStackTrace();
+            if (e.getCause() != null) e.getCause().printStackTrace();
+            
+            alert.showAndWait();    
+        }
+
+        import java.util.Stack;
+
+        public class Sudoku extends Application
+        {
+        // Move スタックを保存するための変数
+         private Stack<Move> moveStack = new Stack<>();
+         // ...
+
+             // ユーザーが新しい移動を行ったときに呼び出されるメソッド
+         private void makeMove(int row, int col, int value)
+     {
+        // 現在のボード状態をスタックに保存する
+        moveStack.push(new Move(row, col, value));
+        
+        // その他の処理（ボードの更新など）
+    }
+
+    // Undo メニューアイテムが選択されたときに呼び出されるメソッド
+    private void undoMove()
+    {
+        if (!moveStack.isEmpty())
+        {
+            // スタックから最後の移動を取り出す
+            Move lastMove = moveStack.pop();
+            
+            // その移動を元に戻す（セルの値を元の値に戻すなど）
+            // 例：board.setCell(lastMove.getRow(), lastMove.getCol(), 0);
+            
+            // その他の処理
+        }
+    }
+    }
+
+
+
+    }
+    }};
+
 
         // save to text
         addMenuItem(fileMenu, "Save to text", () -> {
